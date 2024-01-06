@@ -7,6 +7,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
@@ -24,6 +26,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public ProcessedTokenResp processToken(String token) {
+        if (token == null) throw new RuntimeException("authetication token is null");
         HttpEntity<String> requestEntity = createAuthorizationRequest(Map.of(HttpHeaders.AUTHORIZATION, token));
         return restTemplate.postForObject(validateTokenUrl, requestEntity, ProcessedTokenResp.class);
     }

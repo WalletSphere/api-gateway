@@ -1,5 +1,6 @@
 package com.khomishchak.apigateway.filters;
 
+import com.khomishchak.apigateway.exceptions.MissingHeaderException;
 import com.khomishchak.apigateway.model.ProcessedTokenResp;
 import com.khomishchak.apigateway.service.JwtService;
 import com.khomishchak.apigateway.validator.RouterValidator;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class AuthenticationFilter implements GatewayFilter {
 
+    private static final String USER_ID_HEADER = "UserId";
     private final RouterValidator routerValidator;
     private final JwtService jwtService;
 
@@ -30,7 +32,7 @@ public class AuthenticationFilter implements GatewayFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
 
-        if (routerValidator.isSecured.test(request)) {
+        if (routerValidator.isPublicEndpoint.test(request)) {
             return handleSecuredRequest(exchange, request, chain);
         }
         return chain.filter(exchange);
@@ -63,12 +65,14 @@ public class AuthenticationFilter implements GatewayFilter {
     }
 
     private String getAuthHeader(ServerHttpRequest request) {
-        return request.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION).get(0);
+        return request.getHeaders().getOrEmpty(HttpHeaders.AUTHORIZATION).stream()
+                .findFirst()
+                .orElseThrow(() -> new MissingHeaderException("Authorization header missing"));
     }
 
     private void updateRequest(ServerWebExchange exchange, Long userId){
         exchange.getRequest().mutate()
-                .header("UserId", String.valueOf(userId))
+                .header(USER_ID_HEADER, String.valueOf(userId))
                 .build();
     }
 }

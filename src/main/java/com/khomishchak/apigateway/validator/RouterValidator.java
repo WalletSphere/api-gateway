@@ -13,7 +13,7 @@ public class RouterValidator {
             "/auth/register", "/auth/login", "/users", "/users/authenticate", "/exchangers/used-currencies"
     );
 
-    public Predicate<ServerHttpRequest> isSecured =
+    public Predicate<ServerHttpRequest> isPublicEndpoint =
             request -> openApiEndpoints.stream()
                     .noneMatch(uri -> request.getURI().getPath().contains(uri));
 }
