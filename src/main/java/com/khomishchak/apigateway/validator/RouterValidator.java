@@ -10,7 +10,8 @@ import java.util.function.Predicate;
 public class RouterValidator {
 
     // TODO: update logic flow for APIs list
-    //  create an logic where we will save hash of secret keys in db where admin via separate APIs in backoffice:
+    //  create an API for backoffice where admin(and only admin) will be able to save/update secret keys in db(hashed) for accessing exact APIs
+    //  needed for API that can be accessed from both client and other internal service, apis for given change:
     //   /balances/transactions/history
     public static final List<String> openApiEndpoints = List.of(
             "/auth/register", "/auth/login", "/auth/token", "/users", "/users/authenticate", "/exchangers/used-currencies",
